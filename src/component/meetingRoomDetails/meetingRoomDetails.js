@@ -16,15 +16,19 @@ const MeetingRoomDetails = (props) => {
 
   const rooms = [
     {
-      value: "t1",
+      value: null,
+      label: "Please Select the Room",
+    },
+    {
+      value: "Training Room-1",
       label: "Training Room-1",
     },
     {
-      value: "t2",
+      value: "Training Room-2",
       label: "Training Room-2",
     },
     {
-      value: "m",
+      value: "Meeting Room",
       label: "Meeting Room",
     },
   ];
@@ -37,7 +41,13 @@ const MeetingRoomDetails = (props) => {
         id="training-room"
         select
         label="Meeting Room"
-        onChange={(e) => setMeetingRoom(e.target.value)}
+        onChange={(e) => {
+          if (e.target.value === "Please Select the Room") {
+            setMeetingRoom(null);
+          } else {
+            setMeetingRoom(e.target.value);
+          }
+        }}
         SelectProps={{
           native: true,
         }}

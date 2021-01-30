@@ -14,6 +14,7 @@ const ChooseSlot = (props) => {
   const userVal = useSelector(user);
   const [date, setDate] = useState(new Date());
   const [slotTime, setSlotTime] = useState(null);
+  const [dateSelected, setDateSelected] = useState(false);
 
   const bookAppointment = () => {
     let hour = parseInt(slotTime.split(" ")[0].split(":")[0]);
@@ -64,7 +65,14 @@ const ChooseSlot = (props) => {
 
   return (
     <>
-      <Calendar value={date} minDate={new Date()} onChange={setDate} />
+      <Calendar
+        value={date}
+        minDate={new Date()}
+        onChange={(val) => {
+          setDate(val);
+          setDateSelected(true);
+        }}
+      />
       <p style={{ textAlign: "center" }}>
         {moment(date).format("dddd, Do MMMM")}
       </p>
@@ -75,6 +83,7 @@ const ChooseSlot = (props) => {
         onClick={bookAppointment}
         variant="contained"
         color="secondary"
+        disabled={!(dateSelected && slotTime)}
         style={{ margin: "10px 40% 30px 40%", width: "20%" }}
       >
         BOOK APPOINTMENT
