@@ -1,57 +1,75 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import {
+  Route,
+  BrowserRouter as Router,
+  Switch,
+  Redirect,
+} from "react-router-dom";
+import Login from "./pages/login/Login";
+import BookMeeting from "./pages/bookMeeting/BookMeeting";
+import ChooseSlot from "./component/chooseSlot/chooseSlot";
+import ApiCalendar from "react-google-calendar-api";
+import { NotificationContainer } from "react-notifications";
+import "react-notifications/lib/notifications.css";
+import { useDispatch } from "react-redux";
+import { NotificationManager } from "react-notifications";
+import { setUserData } from "../src/reducers/userReducer";
+import NavBar from "./component/navBar/navBar";
 
 function App() {
+  const dispatch = useDispatch();
+  const [sign, setSign] = useState(ApiCalendar.sign);
+
+  useEffect(() => {
+    ApiCalendar.onLoad(() => {
+      if (ApiCalendar.sign) {
+        setSign(ApiCalendar.sign);
+        setData();
+      }
+      ApiCalendar.listenSign((val) => {
+        setSign(val);
+        setData();
+        if (val) {
+          NotificationManager.success("Succesfully Login!", "login", 2000);
+        }
+      });
+    });
+  }, []);
+
+  const setData = () => {
+    let user = window.gapi.auth2
+      .getAuthInstance()
+      .currentUser.get()
+      .getBasicProfile();
+    dispatch(
+      setUserData({
+        userName: user.getName(),
+        userEmail: user.getEmail(),
+      })
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+    <>
+      <NavBar sign={sign} />
+      <Router>
+        <Switch>
+          {!sign ? (
+            <>
+              <Route exact path="/" component={Login} />
+              <Route render={() => <Redirect to="/" />} />
+            </>
+          ) : (
+            <>
+              <Route path="/booking" component={BookMeeting} />
+              <Route path="/bookSlot" component={ChooseSlot} />
+              <Route render={() => <Redirect to="/booking" />} />
+            </>
+          )}
+        </Switch>
+      </Router>
+      <NotificationContainer />
+    </>
   );
 }
 

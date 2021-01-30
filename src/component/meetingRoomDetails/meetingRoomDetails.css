@@ -1,0 +1,11 @@
+.meetingRoom{
+    text-align: center;
+    margin-left : auto;
+    margin-right : auto;
+    width: 50%; 
+    display : flex;
+   flex-flow : column wrap;
+    margin-top : 30px;
+}
+
+
